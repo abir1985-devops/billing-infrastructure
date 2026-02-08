@@ -1,55 +1,75 @@
-# Billing Infrastructure
+## Overview
 
-Infrastructure definition and deployment orchestration for the Billing API service.
+This repository defines the operational environment of a backend service in a cloud system without manual server interaction.
 
-This repository describes how the service is provisioned, configured and updated in a reproducible environment using Infrastructure as Code and automated configuration management.
+The deployment lifecycle is fully automated:
 
-Application source code:  
+Code change → tests → container build → registry publish → remote rollout
+
+The server never builds application code and is not manually modified after bootstrap.  
+All runtime state is declared and reproducible.
+
+Application source:
 https://github.com/abir1985-devops/billing-api
+
+---
+
+## What this project demonstrates
+
+Focus of this repository is system operation, not application logic.
+
+It implements:
+
+- reproducible infrastructure
+- automated configuration
+- immutable deployments
+- controlled service rollout
+- separation of build and runtime responsibilities
+
+The objective is reliable software operation.
 
 ---
 
 ## System Behavior
 
-The infrastructure guarantees:
+The infrastructure provides:
 
-- deterministic server provisioning
+- deterministic provisioning
 - idempotent configuration
-- automated application rollout
-- zero manual server modification after bootstrap
-- consistent runtime state across redeployments
+- automated deployment
+- absence of configuration drift
+- consistent state after redeployment
 
-The server is treated as disposable: it can be destroyed and recreated without affecting deployment correctness.
+The server is replaceable without affecting system correctness.
 
 ---
 
 ## Deployment Model
 
-Application delivery follows an immutable deployment approach.
+Application delivery follows an immutable model:
 
-1. Source code change triggers CI
-2. Tests validate application behavior
-3. Container image is built and published
-4. Server pulls the new image
-5. Services restart automatically
+1. Source change triggers CI
+2. Tests validate behavior
+3. Container image is produced
+4. Server pulls new artifact
+5. Services restart
 
-The server never builds application code and does not depend on Git state.
+The runtime environment does not depend on repository state.
 
 ---
 
 ## Runtime Architecture
 
-Public traffic enters through a reverse proxy.
 
 Client → Nginx → API Container → PostgreSQL Container
 
 Properties:
 
-- only the proxy is publicly reachable
-- application is private inside container network
-- database is not externally exposed
-- configuration separated from image
-- service restart safe (persistent storage)
+- only reverse proxy is publicly reachable
+- application network is private
+- database is isolated
+- configuration external to image
+- persistent storage survives restart
 
 ---
 
